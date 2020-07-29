@@ -34,7 +34,7 @@
       lastActiveDate = new Date();
       isDevicePhone = getDevice(navigatorAlias.userAgent.toLowerCase()) === 'phone';
   
-      if (!localStorage.getItem('hs-eq')) HockeyStack.startSession();
+      if (!localStorage.getItem('hs_eq')) HockeyStack.startSession();
       else HockeyStack.trackSession();
     };
   
@@ -51,14 +51,14 @@
       addAction('start-session');
   
       // check if revisiting user
-      if (!getCookie('hs-uuid')) setCookie('hs-uuid', getId(), 365);
+      if (!getCookie('hs_uuid')) setCookie('hs_uuid', getId(), 365);
   
       sendReqViaBeacon(serverURL + '/data/send');
       HockeyStack.trackSession();
     };
   
     HockeyStack.endSession = function () {
-      if (!localStorage.getItem('hs-eq')) return;
+      if (!localStorage.getItem('hs_eq')) return;
   
       let scrollDepth = (!hasVerticalScroll()) ? 100 : parseInt((scrollMax / (getDocHeight() - getViewportHeight())) * 100);
       if (scrollDepth > 100) scrollDepth = 100;
@@ -76,7 +76,7 @@
       let nextSiteURL = documentAlias.activeElement.href;
       if (sameSite(nextSiteURL)) {
         nextSiteURL = nextSiteURL.split('#')[0];
-        const lastURL = JSON.parse(localStorage.getItem('hs-eq')).slice(-1)[0].url;
+        const lastURL = JSON.parse(localStorage.getItem('hs_eq')).slice(-1)[0].url;
         const currentURL = windowAlias.location.origin + windowAlias.location.pathname;
         if (nextSiteURL.startsWith('http') && currentURL !== nextSiteURL && currentURL === lastURL) {
           addAction('scroll-depth', null, scrollDepth);
@@ -94,14 +94,14 @@
     };
   
     HockeyStack.trackSession = () => {
-      const lastDateFromQueue = new Date(JSON.parse(localStorage.getItem('hs-eq')).splice(-1)[0].actions.splice(-1)[0].actionDate);
+      const lastDateFromQueue = new Date(JSON.parse(localStorage.getItem('hs_eq')).splice(-1)[0].actions.splice(-1)[0].actionDate);
       if ((new Date().getTime()) - lastDateFromQueue.getTime() > (1000 * 60 * inactivityTime)) {
         isInactive = true;
         lastActiveDate = lastDateFromQueue;
   
-        const scrollDepth = JSON.parse(localStorage.getItem('sd-key')) * 10; // if there still isn't a scroll-depth value, returns 0
+        const scrollDepth = JSON.parse(localStorage.getItem('hs_sdkey')) * 10; // if there still isn't a scroll-depth value, returns 0
   
-        const lastURLFromQueue = JSON.parse(localStorage.getItem('hs-eq')).splice(-1)[0].url;
+        const lastURLFromQueue = JSON.parse(localStorage.getItem('hs_eq')).splice(-1)[0].url;
         addAction('scroll-depth', lastURLFromQueue, scrollDepth);
         addAction('end-session', lastURLFromQueue);
   
@@ -175,8 +175,8 @@
           if (isDevicePhone && browser === 'Safari') {
             let scrollDepth = (!hasVerticalScroll()) ? 100 : parseInt((scrollMax / (getDocHeight() - getViewportHeight())) * 100);
             if (scrollDepth > 100) scrollDepth = 100;
-            const localScrollDepth = JSON.parse(localStorage.getItem('sd-key'));
-            if (parseInt(scrollDepth / 10) > localScrollDepth) localStorage.setItem('sd-key', parseInt(scrollDepth / 10))
+            const localScrollDepth = JSON.parse(localStorage.getItem('hs_sdkey'));
+            if (parseInt(scrollDepth / 10) > localScrollDepth) localStorage.setItem('hs_sdkey', parseInt(scrollDepth / 10))
           }
         }
       };
@@ -190,7 +190,7 @@
         inactivityCounter = 0;
         isInactive = false;
   
-        if (localStorage.getItem('hs-eq') === null) {
+        if (localStorage.getItem('hs_eq') === null) {
           HockeyStack.init(HockeyStack.apiKey);
         }
       };
@@ -234,7 +234,7 @@
       } else if (actionType === 'scroll-depth') actionObject.actionNumber = actionInfo;
   
       const currentURL = (!URL) ? (windowAlias.location.origin + windowAlias.location.pathname): URL;
-      const queue = JSON.parse(localStorage.getItem('hs-eq')) || [];
+      const queue = JSON.parse(localStorage.getItem('hs_eq')) || [];
       const len = queue.length;
   
       if (len === 0 || queue[len - 1].url !== currentURL) {
@@ -246,12 +246,12 @@
       } else {
         queue[len - 1].actions.push(actionObject);
       }
-      localStorage.setItem('hs-eq', HockeyStack.serialize(queue));
+      localStorage.setItem('hs_eq', HockeyStack.serialize(queue));
     };
   
     const removeLocalStorageItems = () => {
-      localStorage.removeItem('hs-eq');
-      localStorage.removeItem('sd-key');
+      localStorage.removeItem('hs_eq');
+      localStorage.removeItem('hs_sdkey');
     };
   
     const supportsSendBeacon = () => {
@@ -270,7 +270,7 @@
         apiKey: HockeyStack.apiKey
       };
       const userObject = getUserProperties();
-      const sessionObject = localStorage.getItem('hs-eq');
+      const sessionObject = localStorage.getItem('hs_eq');
       const referrer = document.referrer;
       const requestObj = { customerObject, userObject, sessionObject, referrer };
   
@@ -298,7 +298,7 @@
     };
   
     const getId = () => {
-      return getCookie('hs-uuid') || generateUUID();
+      return getCookie('hs_uuid') || generateUUID();
     };
   
     const generateUUID = () => {
