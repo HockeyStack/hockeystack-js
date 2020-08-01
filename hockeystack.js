@@ -1,6 +1,6 @@
 (function (root, factory) {
   if(typeof define === 'function' && define.amd) { // AMD
-    define('HockeyStack', [], function(){ return factory(root.HockeyStack);});
+    define('hockeystack', [], function(){ return factory(root.HockeyStack);});
   } else if(typeof module === 'object' && module.exports) { // Node
     module.exports = factory(root.HockeyStack);
   } else { // Browser globals
