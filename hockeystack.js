@@ -439,7 +439,9 @@
         path.unshift(t);
         break;
       } else {
-        if (el.className) t += '.' + el.className.replace(/ /g, '.');
+        const isSVG = (el.nodeType === 1 && el.namespaceURI === 'http://www.w3.org/2000/svg');
+        let className = (isSVG ? (el.className ? el.className.baseVal : el.getAttribute('class')) : el.className).trim() || '';
+        if (className !== '') t += '.' + className.replace(/ /g, '.');
 
         const parentElement = el.parentElement;
         if (parentElement) {
