@@ -275,13 +275,10 @@
     const referrer = document.referrer;
     const requestObj = { customerObject, userObject, sessionObject, referrer };
 
-    const headers = { type: 'application/x-www-form-urlencoded; charset=UTF-8' };
     let success = false;
 
     try {
-      const blob = new Blob([JSON.stringify(requestObj, null, 2)], headers);
-
-      success = navigatorAlias.sendBeacon(url, blob);
+      success = navigatorAlias.sendBeacon(url, JSON.stringify(requestObj));
     } catch (e) {
       return false;
     }

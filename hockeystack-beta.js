@@ -250,13 +250,10 @@ window.HockeyStack = (() => {
     const referrer = document.referrer;
     const requestObj = { customerObject, userObject, actionLog, referrer };
 
-    const headers = { type: 'application/x-www-form-urlencoded; charset=UTF-8' };
     let success = false;
 
     try {
-      const blob = new Blob([JSON.stringify(requestObj, null, 2)], headers);
-
-      success = navigatorAlias.sendBeacon(serverURL + '/data/send-beta', blob);
+      success = navigatorAlias.sendBeacon(serverURL + '/data/send-beta', JSON.stringify(requestObj));
     } catch (e) {
       return false;
     }
@@ -276,7 +273,7 @@ window.HockeyStack = (() => {
 
     const request = new XMLHttpRequest();
     request.open('POST', serverURL + '/data/send-beta', true);
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.setRequestHeader('Content-Type', 'text/plain; charset=UTF-8');
     request.send(JSON.stringify(requestObj));
 
     request.onreadystatechange = () => {
