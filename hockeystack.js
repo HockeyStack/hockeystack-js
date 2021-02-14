@@ -182,6 +182,19 @@
       }
     };
 
+    function onSubmitFunc (e) {
+      resetInactivity();
+
+      for (let i = 0; i < e.target.elements.length; i++) {
+        const element = e.target.elements[i];
+        if (element.type === 'search') {
+          const obj = { ...getClickInfo(e.target), value: element.value };
+          addAction('onsearch', null, obj);
+          return;
+        }
+      }
+    };
+
     function resetInactivity () {
       if ((new Date().getTime()) - lastActiveDate.getTime() > (1000 * 60 * inactivityTime)) {
         isInactive = true;
@@ -199,6 +212,7 @@
     addEvent(windowAlias, 'mousemove', resetInactivity);
     addEvent(windowAlias, 'click', (e) => onClickFunc(e));
     addEvent(windowAlias, 'scroll', (e) => onScrollFunc(e));
+    addEvent(windowAlias, 'submit', (e) => onSubmitFunc(e));
     addEvent(windowAlias, 'keydown', resetInactivity);
 
     // track user inactivity
@@ -232,6 +246,9 @@
       actionObject.actionElement = actionInfo.element;
       if (actionInfo.text) actionObject.actionText = actionInfo.text;
       if (actionInfo.url) actionObject.actionURL = actionInfo.url;
+    } else if (actionType === 'onsearch') {
+      actionObject.actionValue = actionInfo.value;
+      actionObject.actionElement = actionInfo.element;
     } else if (actionType === 'scroll-depth') actionObject.actionNumber = actionInfo;
 
     const currentURL = (!URL) ? (windowAlias.location.origin + windowAlias.location.pathname): URL;
@@ -334,7 +351,7 @@
 
   const isBot = () => {
     const userAgent = navigatorAlias.userAgent.toLowerCase();
-    return /(nuhk|googlebot|googlesecurityscanner|yammybot|openbot|slurp|msnbot|ask jeeves\/teoma|ia_archiver|bingbot|google web preview|mediapartners-google|adsbot-google|baiduspider|ezooms|yahooseeker|altavista|avsearch|mercator|scooter|infoseek|ultraseek|lycos|wget|yandexbot|yandex|yadirectfetcher|sitebot|exabot|ahrefsbot|mj12bot|turnitinbot|magpie-crawler|nutch crawler|cms crawler|rogerbot|domnutch|ssearch_bot|xovibot|netseer|digincore|fr-crawler|wesee|aliasio|contxbot|pingdombot|bingpreview|headlesschrome)/.test(userAgent);
+    return /(nuhk|googlebot|googlesecurityscanner|slurp|ask jeeves\/teoma|ia_archiver|google web preview|mediapartners-google|baiduspider|ezooms|yahooseeker|altavista|mercator|scooter|infoseek|ultraseek|lycos|wget|yandex|yadirectfetcher|magpie-crawler|nutch crawler|cms crawler|domnutch|netseer|digincore|fr-crawler|wesee|aliasio|bingpreview|headlesschrome|facebookexternalhit|bot|crawler|spider|search|worm|fetch|nutch)/.test(userAgent);
   }
 
   const getDevice = (userAgent) => {

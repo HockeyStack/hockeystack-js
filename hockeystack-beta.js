@@ -13,6 +13,7 @@ window.HockeyStack = (() => {
   let lastActiveDate = new Date();
   let isDevicePhone;
   let globalCurrentPage = window.location.href;
+  let exitedPage = false; // sometimes two consequent endSession() calls are made from event listeners in phones
 
   const documentAlias = document;
   const navigatorAlias = navigator;
@@ -67,7 +68,10 @@ window.HockeyStack = (() => {
     isInactive = false;
 
     addEvent(windowAlias, 'pagehide', () => {
-      HockeyStack.endSession();
+      if (!exitedPage) {
+        exitedPage = true;
+        HockeyStack.endSession();
+      }
     });
 
     if (isDevicePhone) {
@@ -80,9 +84,12 @@ window.HockeyStack = (() => {
     let hidden = 'hidden';
 
     function onchange () {
-      if (!documentAlias[hidden]) resetInactivity();
-      else {
-        if (isDevicePhone) {
+      if (!documentAlias[hidden]) {
+        exitedPage = false;
+        resetInactivity();
+      } else {
+        if (isDevicePhone && !exitedPage) {
+          exitedPage = true;
           HockeyStack.endSession();
         }
       }
@@ -123,6 +130,20 @@ window.HockeyStack = (() => {
       if (scrollHeight > scrollMax) scrollMax = scrollHeight;
     };
 
+    function onSubmitFunc (e) {
+      resetInactivity();
+
+      console.log(getClickInfo(e.target))
+      for (let i = 0; i < e.target.elements.length; i++) {
+        const element = e.target.elements[i];
+        if (element.type === 'search') {
+          const obj = { ...getClickInfo(e.target), value: element.value };
+          createAction('onsearch', null, obj);
+          return;
+        }
+      }
+    };
+
     addEvent(document, 'mouseover', () => {
       window.innerPageClick = true;
     });
@@ -147,6 +168,7 @@ window.HockeyStack = (() => {
     addEvent(windowAlias, 'mousemove', resetInactivity);
     addEvent(windowAlias, 'click', (e) => onClickFunc(e));
     addEvent(windowAlias, 'scroll', (e) => onScrollFunc(e));
+    addEvent(windowAlias, 'submit', (e) => onSubmitFunc(e));
     addEvent(windowAlias, 'keydown', resetInactivity);
 
     // track user inactivity
@@ -220,6 +242,9 @@ window.HockeyStack = (() => {
           return;
         }
       }
+    } else if (actionType === 'onsearch') {
+      actionObject.actionValue = actionInfo.value;
+      actionObject.actionElement = actionInfo.element;
     } else if (actionType === 'scroll-depth') actionObject.actionNumber = actionInfo;
     actionLog.push({ action: actionObject, url: currentURL });
   };
@@ -329,7 +354,7 @@ window.HockeyStack = (() => {
 
   const isBot = () => {
     const userAgent = navigatorAlias.userAgent.toLowerCase();
-    return /(nuhk|googlebot|googlesecurityscanner|yammybot|openbot|slurp|msnbot|ask jeeves\/teoma|ia_archiver|bingbot|google web preview|mediapartners-google|adsbot-google|baiduspider|ezooms|yahooseeker|altavista|avsearch|mercator|scooter|infoseek|ultraseek|lycos|wget|yandexbot|yandex|yadirectfetcher|sitebot|exabot|ahrefsbot|mj12bot|turnitinbot|magpie-crawler|nutch crawler|cms crawler|rogerbot|domnutch|ssearch_bot|xovibot|netseer|digincore|fr-crawler|wesee|aliasio|contxbot|pingdombot|bingpreview|headlesschrome)/.test(userAgent);
+    return /(nuhk|googlebot|googlesecurityscanner|slurp|ask jeeves\/teoma|ia_archiver|google web preview|mediapartners-google|baiduspider|ezooms|yahooseeker|altavista|mercator|scooter|infoseek|ultraseek|lycos|wget|yandex|yadirectfetcher|magpie-crawler|nutch crawler|cms crawler|domnutch|netseer|digincore|fr-crawler|wesee|aliasio|bingpreview|headlesschrome|facebookexternalhit|bot|crawler|sp(i|y)der|search|worm|fetch|nutch)/.test(userAgent);
   }
 
   const getDevice = (userAgent) => {
