@@ -351,7 +351,7 @@
 
   const isBot = () => {
     const userAgent = navigatorAlias.userAgent.toLowerCase();
-    return /(nuhk|googlebot|googlesecurityscanner|slurp|ask jeeves\/teoma|ia_archiver|google web preview|mediapartners-google|baiduspider|ezooms|yahooseeker|altavista|mercator|scooter|infoseek|ultraseek|lycos|wget|yandex|yadirectfetcher|magpie-crawler|nutch crawler|cms crawler|domnutch|netseer|digincore|fr-crawler|wesee|aliasio|bingpreview|headlesschrome|facebookexternalhit|bot|crawler|spider|search|worm|fetch|nutch)/.test(userAgent);
+    return /(nuhk|googlebot|googlesecurityscanner|slurp|ask jeeves\/teoma|ia_archiver|google web preview|mediapartners-google|baiduspider|ezooms|yahooseeker|altavista|mercator|scooter|infoseek|ultraseek|lycos|wget|yandex|yadirectfetcher|magpie-crawler|nutch crawler|cms crawler|domnutch|netseer|digincore|fr-crawler|wesee|aliasio|bingpreview|headlesschrome|facebookexternalhit|facebookplatform|facebookexternalua|fb_iab|fbav|bot|crawler|spider|search|worm|fetch|nutch)/.test(userAgent);
   }
 
   const getDevice = (userAgent) => {
