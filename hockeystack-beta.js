@@ -425,7 +425,7 @@ window.HockeyStack = (() => {
       } else {
         const isSVG = (el.nodeType === 1 && el.namespaceURI === 'http://www.w3.org/2000/svg');
         const className = (isSVG ? (el.className ? el.className.baseVal : el.getAttribute('class')) : el.className).trim() || '';
-        if (className !== '') t += '.' + className.replace(/ /g, '.');
+        if (className !== '') t += '.' + className.replace(/ +/g, '.');
 
         const parentElement = el.parentElement;
         if (parentElement) {
