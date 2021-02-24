@@ -78,7 +78,7 @@
     if (sameSite(nextSiteURL)) {
       nextSiteURL = nextSiteURL.split('#')[0];
       const lastURL = JSON.parse(localStorage.getItem('hs_eq')).slice(-1)[0].url;
-      const currentURL = windowAlias.location.origin + windowAlias.location.pathname;
+      const currentURL = windowAlias.location.origin + windowAlias.location.pathname + windowAlias.location.search;
       if (nextSiteURL.startsWith('http') && currentURL !== nextSiteURL && currentURL === lastURL) {
         addAction('scroll-depth', null, scrollDepth);
         addAction('exit-page');
@@ -183,13 +183,16 @@
     };
 
     function onSubmitFunc (e) {
+      console.log("submit");
       resetInactivity();
-
+      console.log(e.target);
       for (let i = 0; i < e.target.elements.length; i++) {
         const element = e.target.elements[i];
+        console.log(element);
         if (element.type === 'search') {
           const obj = { ...getClickInfo(e.target), value: element.value };
           addAction('onsearch', null, obj);
+          HockeyStack.endSession();
           return;
         }
       }
@@ -251,7 +254,7 @@
       actionObject.actionElement = actionInfo.element;
     } else if (actionType === 'scroll-depth') actionObject.actionNumber = actionInfo;
 
-    const currentURL = (!URL) ? (windowAlias.location.origin + windowAlias.location.pathname): URL;
+    const currentURL = (!URL) ? (windowAlias.location.origin + windowAlias.location.pathname + windowAlias.location.search): URL;
     const queue = JSON.parse(localStorage.getItem('hs_eq')) || [];
     const len = queue.length;
 
