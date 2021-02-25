@@ -14,6 +14,7 @@
   // VARIABLES
   const serverURL = 'https://hockeystack.com';
   const inactivityTime = 5;
+  const apiKey = document.currentScript.getAttribute('apikey');
   let inactivityCounter = 0;
   let isInactive = false;
   let scrollMax = 0;
@@ -481,6 +482,8 @@
     if (url !== '') res.url = url;
     return res;
   };
+
+  if (apiKey) HockeyStack.init(apiKey);
 
   // RETURN OBJECT
   return HockeyStack;
